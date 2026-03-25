@@ -1,0 +1,63 @@
+# vc-signal-scanner configuration
+
+# Default thesis file
+default_thesis: "theses/3vc_default.yaml"
+
+# Scoring settings
+scoring:
+  model: "claude-sonnet-4-20250514"  # Claude model to use for scoring
+  relevance_threshold: 6.0            # Minimum score to include in digest (0-10)
+  max_concurrent_requests: 5          # Parallel LLM requests (respect rate limits)
+
+# Data source configuration
+sources:
+  hackernews:
+    enabled: true
+    min_score: 50          # Minimum HN points to consider
+    categories:            # Which HN sections to scan
+      - "show"
+      - "top"
+    max_items: 60
+
+  producthunt:
+    enabled: true
+    min_votes: 100         # Minimum upvotes to consider
+    max_items: 30
+
+  github:
+    enabled: true
+    languages:             # Programming languages to track
+      - "python"
+      - "typescript"
+      - "rust"
+      - "go"
+    min_stars_24h: 50      # Minimum stars gained in 24h
+    max_items: 30
+
+  rss:
+    enabled: true
+    max_items_per_feed: 15
+    max_age_hours: 48       # Only include articles from last 48 hours
+    feeds:
+      # European startup ecosystem
+      - "https://tech.eu/feed/"
+      - "https://sifted.eu/feed"
+      - "https://www.eu-startups.com/feed/"
+      # DACH-specific
+      - "https://www.trendingtopics.eu/feed/"
+      - "https://brutkasten.com/feed/"
+      # General tech
+      - "https://techcrunch.com/feed/"
+      # AI news
+      - "https://the-decoder.com/feed/"
+
+# Output settings
+output:
+  markdown:
+    enabled: true
+    output_dir: "output/"
+    max_items: 15          # Max signals in the digest
+
+  slack:
+    enabled: false         # Set to true and add SLACK_WEBHOOK_URL to .env
+    max_items: 10

@@ -1,0 +1,51 @@
+# Investment Thesis: 3VC
+# European VC fund, Vienna-based, ~€150M Fund II
+# Invests post-PMF with global ambition, 3-4 deals/year
+
+fund_name: "3VC"
+
+thesis:
+  stage: >
+    Post product-market fit. Typically Series A, occasionally late Seed or Series B.
+    Companies should have demonstrable traction — revenue, strong user growth,
+    or validated enterprise demand. Not interested in pre-product or idea-stage.
+
+  geography: >
+    Founders from DACH (Germany, Austria, Switzerland) and CEE (Central and Eastern Europe).
+    Companies must have global ambition — European base but building for a worldwide market.
+    Extra attention to underrepresented ecosystems: Vienna, Prague, Warsaw, Budapest, Bucharest.
+
+  sectors:
+    - "AI and machine learning — both infrastructure and vertical applications"
+    - "Developer tools and platforms"
+    - "Deep tech with clear commercial applications"
+    - "Cybersecurity and data protection"
+    - "Digital health and health tech"
+    - "Data infrastructure and analytics"
+    - "B2B SaaS solving large market problems"
+
+  signals:
+    positive:
+      - "Clear revenue traction or strong growth metrics"
+      - "European founding team (especially DACH/CEE) with global product"
+      - "Technical moat — proprietary technology, unique data, or deep domain expertise"
+      - "Expanding engineering team (active hiring)"
+      - "Product used by recognizable customers or enterprises"
+      - "Open-source project with strong community adoption"
+      - "Repeat founders or team from strong technical backgrounds"
+      - "Recent press coverage in European tech media"
+
+    negative:
+      - "Pre-product or idea stage only"
+      - "Consumer social or ad-dependent business model"
+      - "No clear technical differentiation — wrapper or thin integration"
+      - "US-only team with no European connection"
+      - "Crypto/Web3 without clear enterprise utility"
+      - "Hardware-heavy with long go-to-market cycles"
+
+  additional_context: >
+    3VC is known for quality over quantity — they invest in only 3-4 companies per year.
+    The bar is very high. Previous successful investments include Picsart (unicorn),
+    Storyblok (headless CMS), Lokalise (localization platform), and DeepCode (acquired by Snyk).
+    Look for companies that could follow a similar trajectory: strong technical foundations,
+    large addressable markets, and potential to become category leaders.
