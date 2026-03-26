@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VC Signal Scanner</title>
+<link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', path='img/favicon-32x32.png') }}">
+<link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', path='img/favicon-16x16.png') }}">
+<link rel="stylesheet" href="{{ url_for('static', path='css/style.css') }}">
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="header-brand-row">
+      <svg class="header-logo" width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="14" cy="14" r="11" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <circle cx="14" cy="14" r="7" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+        <line x1="14" y1="14" x2="23" y2="5" stroke="rgba(255,255,255,0.7)" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="14" cy="14" r="2.5" fill="#93c5fd"/>
+      </svg>
+      <span class="header-brand">VC Signal Scanner</span>
+    </div>
+    <div class="header-sub">Define your investment thesis — surface the startups that match it before they become obvious.</div>
+  </div>
+  <span class="header-pill">Prototype</span>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Your Thesis</div>
+      <div class="thesis-summary">
+        <div class="thesis-row">
+          <span class="thesis-row-key">Stage:</span>
+          <span id="thesis-stage" class="thesis-pill stage">Series A</span>
+        </div>
+        <div class="thesis-row">
+          <span class="thesis-row-key">Geography:</span>
+          <div id="thesis-geos" class="thesis-pills">
+            <span class="thesis-pill-empty">None selected</span>
+          </div>
+        </div>
+        <div class="thesis-row">
+          <span class="thesis-row-key">Sectors:</span>
+          <div id="thesis-sectors" class="thesis-pills">
+            <span class="thesis-pill-empty">None selected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Stage</div>
+      <select id="filter-stage">
+        <option value="pre-seed">Pre-Seed</option>
+        <option value="seed">Seed</option>
+        <option value="series-a" selected>Series A</option>
+        <option value="series-b">Series B</option>
+        <option value="series-c">Series C+</option>
+      </select>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Geography</div>
+      <div class="checkbox-group">
+        <label class="checkbox-item"><input type="checkbox" name="geo" value="dach" checked> DACH (DE / AT / CH)</label>
+        <label class="checkbox-item"><input type="checkbox" name="geo" value="cee" checked> CEE (PL / CZ / RO…)</label>
+        <label class="checkbox-item"><input type="checkbox" name="geo" value="nordics"> Nordics (SE / FI / DK / NO)</label>
+        <label class="checkbox-item"><input type="checkbox" name="geo" value="western-europe"> Western Europe</label>
+        <label class="checkbox-item"><input type="checkbox" name="geo" value="uk"> UK</label>
+        <label class="checkbox-item"><input type="checkbox" name="geo" value="baltics" checked> Baltics (EE / LV / LT)</label>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Sectors</div>
+      <div class="checkbox-group">
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="ai" checked> AI / ML Infrastructure</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="devtools" checked> Developer Tools</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="deeptech" checked> Deep Tech</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="cybersecurity" checked> Cybersecurity</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="digitalhealth" checked> Digital Health</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="data" checked> Data & Analytics</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="b2bsaas" checked> B2B SaaS</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="fintech" checked> Fintech</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="biotech" checked> Biotech</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="sustainability" checked> Sustainability & Green Tech</label>
+        <label class="checkbox-item"><input type="checkbox" name="sector" value="physicalai" checked> Physical AI</label>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Data Sources</div>
+      <div class="checkbox-group">
+        <label class="checkbox-item"><input type="checkbox" name="source" value="hackernews" checked> Hacker News</label>
+        <label class="checkbox-item"><input type="checkbox" name="source" value="producthunt" checked> Product Hunt</label>
+        <label class="checkbox-item"><input type="checkbox" name="source" value="github" checked> GitHub Trending</label>
+        <label class="checkbox-item"><input type="checkbox" name="source" value="rss" checked> EU Startup RSS</label>
+        <label class="checkbox-item"><input type="checkbox" name="source" value="reddit" checked> Reddit</label>
+        <label class="checkbox-item"><input type="checkbox" name="source" value="launches" checked> Startup Launches</label>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <button class="btn btn-demo" id="demo-btn">Load Demo Results</button>
+      <p class="demo-hint">Demo mode · displaying curated signals from recent scans</p>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Get daily digest (Soon)</div>
+      <form id="subscribe-form">
+        <input type="email" id="email-input" placeholder="you@fund.com" required>
+        <button type="submit" class="btn btn-subscribe">Subscribe</button>
+        <p class="subscribe-success" id="sub-success">✓ You're subscribed!</p>
+      </form>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">How scoring works</div>
+      <div class="score-legend-sidebar">
+        <div class="score-legend-row"><span class="legend-dot score-high">●</span> <strong>8–10</strong> Strong match — fits stage, geography &amp; sector with clear traction</div>
+        <div class="score-legend-row"><span class="legend-dot score-mid">●</span> <strong>6–7</strong> Interesting — partial fit, worth monitoring</div>
+        <div class="score-legend-row"><span class="legend-dot score-low">●</span> <strong>&lt;6</strong> Tangential — loosely related, not a clear fit</div>
+        <p class="score-legend-note">Claude evaluates each signal against your thesis — stage, geography, sectors, and traction.</p>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">About data sources</div>
+      <div class="sources-info">
+        <div class="source-info-row">
+          <a href="https://news.ycombinator.com/show" target="_blank" rel="noopener" class="source-tag source-hackernews">HN</a>
+          <span>Top &amp; Show HN posts — product launches and technical discussions. <a href="https://news.ycombinator.com/show" target="_blank" rel="noopener" class="source-info-link">Show HN ↗</a> · <a href="https://news.ycombinator.com" target="_blank" rel="noopener" class="source-info-link">Top ↗</a></span>
+        </div>
+        <div class="source-info-row">
+          <a href="https://www.producthunt.com" target="_blank" rel="noopener" class="source-tag source-producthunt">PH</a>
+          <span>Daily product launches ranked by votes. <a href="https://www.producthunt.com" target="_blank" rel="noopener" class="source-info-link">producthunt.com ↗</a></span>
+        </div>
+        <div class="source-info-row">
+          <a href="https://github.com/trending" target="_blank" rel="noopener" class="source-tag source-github">GitHub</a>
+          <span>Trending repos by stars today — open-source traction signals. <a href="https://github.com/trending" target="_blank" rel="noopener" class="source-info-link">github.com/trending ↗</a></span>
+        </div>
+        <div class="source-info-row">
+          <a href="https://sifted.eu" target="_blank" rel="noopener" class="source-tag source-rss">EU RSS</a>
+          <span>European startup press.
+            <a href="https://sifted.eu" target="_blank" rel="noopener" class="source-info-link">Sifted ↗</a> ·
+            <a href="https://tech.eu" target="_blank" rel="noopener" class="source-info-link">tech.eu ↗</a> ·
+            <a href="https://www.eu-startups.com" target="_blank" rel="noopener" class="source-info-link">eu-startups ↗</a> ·
+            <a href="https://www.startupreporter.eu" target="_blank" rel="noopener" class="source-info-link">Startup Reporter ↗</a> ·
+            <a href="https://europeanstartupinsider.com" target="_blank" rel="noopener" class="source-info-link">EU Startup Insider ↗</a> ·
+            <a href="https://www.seedtable.com" target="_blank" rel="noopener" class="source-info-link">Seedtable ↗</a> ·
+            <a href="https://www.vestbee.com" target="_blank" rel="noopener" class="source-info-link">Vestbee ↗</a> ·
+            <a href="https://www.trendingtopics.eu/en/" target="_blank" rel="noopener" class="source-info-link">Trending Topics ↗</a>
+          </span>
+        </div>
+        <div class="source-info-row">
+          <a href="https://reddit.com/r/startups" target="_blank" rel="noopener" class="source-tag source-reddit">Reddit</a>
+          <span>Founder discussions &amp; launches. <a href="https://reddit.com/r/startups" target="_blank" rel="noopener" class="source-info-link">r/startups ↗</a> · <a href="https://reddit.com/r/SaaS" target="_blank" rel="noopener" class="source-info-link">r/SaaS ↗</a> · <a href="https://reddit.com/r/MachineLearning" target="_blank" rel="noopener" class="source-info-link">r/ML ↗</a></span>
+        </div>
+        <div class="source-info-row">
+          <a href="https://www.indiehackers.com" target="_blank" rel="noopener" class="source-tag source-launches">Launches</a>
+          <span>Early-stage product launches. <a href="https://www.indiehackers.com" target="_blank" rel="noopener" class="source-info-link">IndieHackers ↗</a> · <a href="https://betalist.com" target="_blank" rel="noopener" class="source-info-link">BetaList ↗</a></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-disclaimer">
+      Prototype — generated scores are experimental and may be inaccurate. Always verify signals independently before acting.
+    </div>
+
+  </aside>
+
+  <main class="main">
+
+    <div class="live-banner" id="live-banner" style="display:none">
+      <span id="live-banner-text">Demo mode — curated example signals</span>
+    </div>
+
+    <!-- Preloaded curated examples — shown on load and when scan finds nothing -->
+    <div id="preloaded-container" style="display:none">
+      <div class="preloaded-banner" id="preloaded-banner">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l2 2"/></svg>
+        Curated examples — run a scan for live signals
+      </div>
+      <div class="cards">
+        {% for s in preloaded %}
+        <div class="card"
+             data-sectors="{{ s.sectors | join(',') }}"
+             data-geography="{{ s.geography | join(',') }}">
+          <div class="card-header">
+            <span class="score-badge {% if s.relevance_score >= 8 %}score-high{% elif s.relevance_score >= 6 %}score-mid{% else %}score-low{% endif %}">
+              {{ "%.1f"|format(s.relevance_score) }}
+            </span>
+            <div class="card-title">{{ s.title }}</div>
+          </div>
+          {% set source_urls = {
+            'hackernews': 'https://news.ycombinator.com/show',
+            'github': 'https://github.com/trending',
+            'producthunt': 'https://www.producthunt.com',
+            'rss': 'https://sifted.eu',
+            'reddit': 'https://reddit.com/r/startups',
+            'launches': 'https://www.indiehackers.com'
+          } %}
+          <div class="card-meta">
+            <a href="{{ source_urls.get(s.source, '#') }}" target="_blank" rel="noopener" class="source-tag source-{{ s.source }}">{{ s.source_label }}</a>
+            {% if s.stage %}<span class="stage-badge">{{ s.stage }}</span>{% endif %}
+          </div>
+          <p class="card-reasoning">{{ s.reasoning }}</p>
+          {% if s.location or s.website or s.founders or s.previous_rounds %}
+            <div class="card-details">
+              {% if s.location %}<span class="card-detail">📍 {{ s.location }}</span>{% endif %}
+              {% if s.website %}<a href="{{ s.website }}" target="_blank" rel="noopener" class="card-detail card-detail-link">🌐 {{ s.website | replace('https://','') | replace('http://','') | truncate(30, true, '…') }}</a>{% endif %}
+              {% if s.founders %}<span class="card-detail">👥 {{ s.founders | join(', ') }}</span>{% endif %}
+              {% if s.previous_rounds %}<span class="card-detail">💰 {{ s.previous_rounds }}</span>{% endif %}
+            </div>
+          {% endif %}
+          {% if s.thesis_alignment %}
+            <div class="card-section-label">Thesis alignment</div>
+            <ul class="alignment-list">
+              {% for point in s.thesis_alignment %}<li>{{ point }}</li>{% endfor %}
+            </ul>
+          {% endif %}
+          {% if s.risk %}
+            <div class="card-risk">⚠ {{ s.risk }}</div>
+          {% endif %}
+          <a href="{{ s.url }}" target="_blank" rel="noopener" class="card-link">Source ↗</a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="cards" id="cards-container" style="display:none">
+      {% for s in signals %}
+      <div class="card"
+           data-sectors="{{ s.sectors | join(',') }}"
+           data-geography="{{ s.geography | join(',') }}">
+        <div class="card-header">
+          <span class="score-badge {% if s.relevance_score >= 8 %}score-high{% elif s.relevance_score >= 6 %}score-mid{% else %}score-low{% endif %}">
+            {{ "%.1f"|format(s.relevance_score) }}
+          </span>
+          <div class="card-title">{{ s.title }}</div>
+        </div>
+        {% set source_urls = {
+          'hackernews': 'https://news.ycombinator.com/show',
+          'github': 'https://github.com/trending',
+          'producthunt': 'https://www.producthunt.com',
+          'rss': 'https://sifted.eu',
+          'reddit': 'https://reddit.com/r/startups',
+          'launches': 'https://www.indiehackers.com',
+          'linkedin': 'https://www.linkedin.com/feed/'
+        } %}
+        <div class="card-meta">
+          <a href="{{ source_urls.get(s.source, '#') }}" target="_blank" rel="noopener" class="source-tag source-{{ s.source }}">{{ s.source_label }}</a>
+          {% if s.score %}<span class="card-score-pts">{{ s.score }} pts</span>{% endif %}
+        </div>
+        <p class="card-reasoning">{{ s.reasoning }}</p>
+        {% if s.location or s.website or s.founders or s.previous_rounds %}
+          <div class="card-details">
+            {% if s.location %}<span class="card-detail">📍 {{ s.location }}</span>{% endif %}
+            {% if s.website %}<a href="{{ s.website }}" target="_blank" rel="noopener" class="card-detail card-detail-link">🌐 {{ s.website | replace('https://','') | replace('http://','') | truncate(30, true, '…') }}</a>{% endif %}
+            {% if s.founders %}<span class="card-detail">👥 {{ s.founders | join(', ') }}</span>{% endif %}
+            {% if s.previous_rounds %}<span class="card-detail">💰 {{ s.previous_rounds }}</span>{% endif %}
+          </div>
+        {% endif %}
+        {% if s.thesis_alignment %}
+          <div class="card-section-label">Thesis alignment</div>
+          <ul class="alignment-list">
+            {% for point in s.thesis_alignment %}<li>{{ point }}</li>{% endfor %}
+          </ul>
+        {% endif %}
+        {% if s.risk %}
+          <div class="card-risk">⚠ {{ s.risk }}</div>
+        {% endif %}
+        <a href="{{ s.url }}" target="_blank" rel="noopener" class="card-link">Source ↗</a>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="loading-overlay" id="loading">
+      {% for _ in range(4) %}
+      <div class="skeleton">
+        <div style="display:flex;gap:10px;margin-bottom:12px">
+          <div class="skeleton-line" style="width:46px;height:22px;border-radius:6px;margin:0;flex-shrink:0"></div>
+          <div class="skeleton-line" style="flex:1;height:16px;margin:0;align-self:center"></div>
+        </div>
+        <div class="skeleton-line" style="width:80px"></div>
+        <div class="skeleton-line" style="width:100%"></div>
+        <div class="skeleton-line" style="width:88%"></div>
+        <div class="skeleton-line" style="width:65%"></div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="empty-state" id="empty-state">
+      <div class="welcome-screen">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#3b5bdb" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:16px;opacity:0.7">
+          <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+        </svg>
+        <h2 class="welcome-title">Thesis-driven startup sourcing</h2>
+        <p class="welcome-sub">This tool scans Hacker News, GitHub Trending, Product Hunt, and European press to surface startups that fit a VC investment thesis — then uses Claude to score each signal for stage, geography, and sector alignment.</p>
+        <div class="welcome-steps">
+          <div class="welcome-step">
+            <span class="welcome-step-num">1</span>
+            <span>Configure your thesis filters in the sidebar — geography, sectors, and data sources</span>
+          </div>
+          <div class="welcome-step">
+            <span class="welcome-step-num">2</span>
+            <span>Click <strong>Load Demo Results</strong> to see a curated set of scored European startups</span>
+          </div>
+          <div class="welcome-step">
+            <span class="welcome-step-num">3</span>
+            <span>Each card shows an AI-generated thesis alignment score, red flags, and sourcing context</span>
+          </div>
+        </div>
+        <p class="welcome-disclaimer">Experimental prototype — scores are AI-generated and for illustrative purposes only.</p>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script>
+  const SOURCE_URLS = {
+    hackernews:  'https://news.ycombinator.com/show',
+    github:      'https://github.com/trending',
+    producthunt: 'https://www.producthunt.com',
+    rss:         'https://sifted.eu',
+    reddit:      'https://reddit.com/r/startups',
+    launches:    'https://www.indiehackers.com',
+  };
+
+  const SECTOR_LABELS = {
+    ai:           'AI and machine learning infrastructure',
+    devtools:     'Developer tools and platforms',
+    deeptech:     'Deep tech with commercial applications',
+    cybersecurity:'Cybersecurity',
+    digitalhealth:'Digital health',
+    data:         'Data and analytics',
+    b2bsaas:      'B2B SaaS',
+    fintech:      'Fintech and financial services',
+    biotech:        'Biotech and life sciences',
+    sustainability: 'Sustainability and green tech',
+    physicalai:     'Physical AI and robotics',
+  };
+  const STAGE_LABELS = {
+    'pre-seed': 'Pre-seed',
+    'seed':     'Seed stage',
+    'series-a': 'Series A',
+    'series-b': 'Series B',
+    'series-c': 'Series C',
+  };
+  const GEO_LABELS = {
+    'dach':           'DACH region (Germany, Austria, Switzerland)',
+    'cee':            'CEE region (Poland, Czech Republic, Romania, Hungary, and other Central/Eastern European countries)',
+    'nordics':        'Nordic region (Sweden, Finland, Denmark, Norway)',
+    'western-europe': 'Western Europe (France, Netherlands, Belgium, Spain, etc.)',
+    'uk':             'United Kingdom',
+    'baltics':        'Baltic states (Estonia, Latvia, Lithuania)',
+  };
+
+  function getChecked(name) {
+    return [...document.querySelectorAll(`input[name="${name}"]:checked`)].map(el => el.value);
+  }
+
+  function updateThesisDisplay() {
+    const stage = document.getElementById('filter-stage').value;
+    const geos = getChecked('geo');
+    const sectors = getChecked('sector');
+
+    document.getElementById('thesis-stage').textContent = STAGE_LABELS[stage]?.split(',')[0] || stage;
+
+    const geoShortLabels = {
+      'dach': 'DACH',
+      'cee': 'CEE',
+      'nordics': 'Nordics',
+      'western-europe': 'W. Europe',
+      'uk': 'UK',
+      'baltics': 'Baltics'
+    };
+    const sectorShortLabels = {
+      'ai': 'AI/ML',
+      'devtools': 'DevTools',
+      'deeptech': 'DeepTech',
+      'cybersecurity': 'Security',
+      'digitalhealth': 'HealthTech',
+      'data': 'Data',
+      'b2bsaas': 'B2B SaaS',
+      'fintech': 'Fintech',
+      'biotech': 'Biotech',
+      'sustainability': 'GreenTech',
+      'physicalai': 'Physical AI'
+    };
+
+    document.getElementById('thesis-geos').innerHTML = geos.length
+      ? geos.map(g => `<span class="thesis-pill">${geoShortLabels[g] || g}</span>`).join('')
+      : '<span class="thesis-pill-empty">None selected</span>';
+
+    document.getElementById('thesis-sectors').innerHTML = sectors.length
+      ? sectors.map(s => `<span class="thesis-pill">${sectorShortLabels[s] || s}</span>`).join('')
+      : '<span class="thesis-pill-empty">None selected</span>';
+  }
+
+  let hasInteracted = false;
+
+  function applyFilters() {
+    const selectedSectors = getChecked('sector');
+    const selectedGeos    = getChecked('geo');
+    const cards = document.querySelectorAll('#cards-container .card:not(.live)');
+    let visible = 0;
+
+    cards.forEach(card => {
+      const cardSectors = card.dataset.sectors ? card.dataset.sectors.split(',').filter(Boolean) : [];
+      const cardGeos    = card.dataset.geography ? card.dataset.geography.split(',').filter(Boolean) : [];
+
+      const sectorMatch = selectedSectors.length > 0 && (cardSectors.length === 0 || cardSectors.some(s => selectedSectors.includes(s)));
+      const geoMatch    = selectedGeos.length > 0    && (cardGeos.length === 0    || cardGeos.some(g => selectedGeos.includes(g)));
+
+      if (sectorMatch && geoMatch) { card.classList.remove('hidden'); visible++; }
+      else                         { card.classList.add('hidden'); }
+    });
+
+    document.getElementById('match-count').textContent = visible;
+    const emptyState = document.getElementById('empty-state');
+    const emptyMsg = document.getElementById('empty-message');
+    if (visible === 0 && hasInteracted) {
+      emptyState.style.display = 'block';
+      emptyMsg.textContent = (selectedSectors.length === 0 || selectedGeos.length === 0)
+        ? 'Select geographies and sectors to see signals.'
+        : 'No signals match these filters.';
+    } else {
+      emptyState.style.display = 'none';
+    }
+  }
+
+  document.querySelectorAll('input[name="sector"], input[name="geo"]')
+    .forEach(el => el.addEventListener('change', () => {
+      hasInteracted = true;
+      applyFilters();
+      updateThesisDisplay();
+    }));
+
+  document.getElementById('filter-stage').addEventListener('change', updateThesisDisplay);
+  const cardsContainer     = document.getElementById('cards-container');
+  const loading            = document.getElementById('loading');
+  const liveBanner         = document.getElementById('live-banner');
+  const preloadedContainer = document.getElementById('preloaded-container');
+  const demoBtn            = document.getElementById('demo-btn');
+  const emptyStateEl       = document.getElementById('empty-state');
+
+  // Show welcome screen on initial load
+  emptyStateEl.style.display = 'block';
+
+  function renderCard(s) {
+    const sc = s.relevance_score >= 8 ? 'score-high' : s.relevance_score >= 6 ? 'score-mid' : 'score-low';
+    const alignment = (s.thesis_alignment || []).map(p => `<li>${p}</li>`).join('');
+    const detailParts = [
+      s.location        ? `<span class="card-detail">📍 ${s.location}</span>` : '',
+      s.website         ? `<a href="${s.website}" target="_blank" rel="noopener" class="card-detail card-detail-link">🌐 ${s.website.replace(/^https?:\/\//, '').slice(0, 30)}</a>` : '',
+      s.founders?.length ? `<span class="card-detail">👥 ${s.founders.join(', ')}</span>` : '',
+      s.previous_rounds  ? `<span class="card-detail">💰 ${s.previous_rounds}</span>` : '',
+    ].filter(Boolean).join('');
+    return `
+      <div class="card live" data-sectors="" data-geography="">
+        <div class="card-header">
+          <span class="score-badge ${sc}">${s.relevance_score.toFixed(1)}</span>
+          <div class="card-title">${s.title}</div>
+        </div>
+        <div class="card-meta">
+          <a href="${SOURCE_URLS[s.source] || '#'}" target="_blank" rel="noopener" class="source-tag source-${s.source}">${s.source_label}</a>
+          ${s.stage ? `<span class="stage-badge">${s.stage}</span>` : ''}
+          ${s.score ? `<span class="card-score-pts">${s.score} pts</span>` : ''}
+        </div>
+        <p class="card-reasoning">${s.reasoning}</p>
+        ${detailParts ? `<div class="card-details">${detailParts}</div>` : ''}
+        ${alignment ? `<div class="card-section-label">Thesis alignment</div><ul class="alignment-list">${alignment}</ul>` : ''}
+        ${s.risk ? `<div class="card-risk">⚠ ${s.risk}</div>` : ''}
+        <a href="${s.url}" target="_blank" rel="noopener" class="card-link">Source ↗</a>
+      </div>`;
+  }
+
+  demoBtn.addEventListener('click', async () => {
+    demoBtn.disabled = true;
+    demoBtn.textContent = 'Loading…';
+    cardsContainer.innerHTML = '';
+    cardsContainer.style.display = 'none';
+    loading.style.display = 'flex';
+    preloadedContainer.style.display = 'none';
+    emptyStateEl.style.display = 'none';
+
+    try {
+      const res = await fetch('/api/demo');
+      const data = await res.json();
+      loading.style.display = 'none';
+      liveBanner.style.display = 'flex';
+      cardsContainer.style.display = 'flex';
+      cardsContainer.innerHTML = data.signals.map(renderCard).join('');
+    } catch (e) {
+      alert('Demo failed: ' + e.message);
+      loading.style.display = 'none';
+    } finally {
+      demoBtn.disabled = false;
+      demoBtn.textContent = 'Load Demo Results';
+    }
+  });
+
+  document.getElementById('subscribe-form').addEventListener('submit', async e => {
+    e.preventDefault();
+    const email = document.getElementById('email-input').value;
+    const btn = e.target.querySelector('button');
+    btn.disabled = true;
+    btn.textContent = 'Subscribing…';
+    const form = new FormData();
+    form.append('email', email);
+    await fetch('/api/subscribe', { method: 'POST', body: form });
+    document.getElementById('sub-success').style.display = 'block';
+    btn.textContent = 'Subscribed!';
+  });
+
+  updateThesisDisplay();
+  applyFilters();
+</script>
+</body>
+</html>
