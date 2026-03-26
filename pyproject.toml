@@ -2,7 +2,9 @@
 name = "vc-signal-scanner"
 version = "0.1.0"
 description = "Thesis-driven startup signal monitor"
-authors = ["Your Name <your.email@example.com>"]
+authors = [
+    {name = "Your Name"}
+]
 requires-python = ">=3.9"
 dependencies = [
     "fastapi>=0.115.0",
