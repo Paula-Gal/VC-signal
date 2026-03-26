@@ -2,10 +2,18 @@
 
 from __future__ import annotations
 
+import os
 import sqlite3
 from pathlib import Path
 
-DB_PATH = Path("data/subscribers.db")
+# Check if we're in a serverless environment (Vercel)
+IS_SERVERLESS = os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+
+if IS_SERVERLESS:
+    # Use /tmp for serverless environments
+    DB_PATH = Path("/tmp/subscribers.db")
+else:
+    DB_PATH = Path("data/subscribers.db")
 
 
 def _conn() -> sqlite3.Connection:

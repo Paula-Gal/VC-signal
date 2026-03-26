@@ -25,12 +25,15 @@ from src.scoring import ThesisScorer
 
 load_dotenv()
 
+# Check if we're in a serverless environment
+IS_SERVERLESS = os.getenv("VERCEL") or os.getenv("AWS_LAMBDA_FUNCTION_NAME")
+
 app = FastAPI()
 templates = Jinja2Templates(directory="templates")
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 PRELOADED_PATH = Path("data/preloaded.json")
-SCAN_COUNT_PATH = Path("data/scan_count.json")
+SCAN_COUNT_PATH = Path("data/scan_count.json") if not IS_SERVERLESS else Path("/tmp/scan_count.json")
 MAX_DAILY_SCANS = 10
 
 EU_RSS_FEEDS = [
@@ -63,7 +66,13 @@ def _get_scan_count() -> int:
 def _increment_scan_count() -> int:
     count = _get_scan_count()
     new_count = count + 1
-    SCAN_COUNT_PATH.write_text(json.dumps({"date": str(date.today()), "count": new_count}))
+    try:
+        SCAN_COUNT_PATH.parent.mkdir(exist_ok=True)
+        SCAN_COUNT_PATH.write_text(json.dumps({"date": str(date.today()), "count": new_count}))
+    except (OSError, PermissionError):
+        # In serverless environments, file writes might fail
+        # Just return the incremented count without persisting
+        pass
     return new_count
 
 
